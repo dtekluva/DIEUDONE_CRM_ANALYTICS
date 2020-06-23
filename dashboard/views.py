@@ -36,7 +36,7 @@ def get_gender_per_branch(request):
 
     if token.get("authenticated"):
         
-        data = Data().gender_per_branch()
+        data = Data(request).gender_per_branch()
         
         return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
 
@@ -49,7 +49,7 @@ def get_grouped_customers_by_month(request):
 
     if token.get("authenticated"):
 
-        data = Data().grouped_customers_by_month()
+        data = Data(request).grouped_customers_by_month()
         
         return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
 
@@ -62,8 +62,8 @@ def get_number_of_loans_per_segment(request):
 
     if token.get("authenticated"):
 
-        data = Data().number_of_loans_per_segment()
-        grouped = Data().loans_amount_per_segment()
+        data = Data(request).number_of_loans_per_segment()
+        grouped = Data(request).loans_amount_per_segment()
         
         return CORS(HttpResponse(json.dumps({"response":{"summarized":data, "grouped":grouped}, "status": True}))).allow_all()
 
@@ -76,7 +76,7 @@ def get_loan_performance_over_time(request):
 
     if token.get("authenticated"):
 
-        data = Data().loan_performance_over_time()
+        data = Data(request).loan_performance_over_time()
         
         return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
 
@@ -89,7 +89,7 @@ def get_deposits_vs_saves(request):
 
     if token.get("authenticated"):
         
-        data = Data().deposits_vs_saves()
+        data = Data(request).deposits_vs_saves()
         
         return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
 
@@ -102,7 +102,7 @@ def get_loans_summary(request):
 
     if token.get("authenticated"):
         
-        data = Data().general_perfomance_of_loans()
+        data = Data(request).general_perfomance_of_loans()
         
         return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
 

@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 import json, datetime, random, secrets
+from rwanda import settings
 #!/usr/bin/env python
 # coding: utf-8
 
@@ -14,6 +15,32 @@ deposit_file_name= './datasets/Deposit_1.csv'
 loan_file_name= './datasets/LoanData_1.csv'
 savings_file_name= './datasets/Savingdata_1.csv'
 
+
+def from_sql(table):
+    import pymysql
+    # global username, password, db
+
+    connection =pymysql.connect(host=settings.HOST,
+                                user=settings.USERNAME,
+                                password=settings.PASSWORD,
+                                db= settings.DB,
+                                charset='utf8mb4',
+                                cursorclass=pymysql.cursors.DictCursor)
+
+    try:
+
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = f"SELECT * FROM {table}"
+            
+            cursor.execute(sql)
+            result = cursor.fetchall()
+
+            return pd.DataFrame(result)
+
+    finally:
+        connection.close()
+
 class Data:
 
     global customers_file_name
@@ -21,16 +48,36 @@ class Data:
     global loan_file_name
     global savings_file_name
 
-    customers_file = pd.read_csv(customers_file_name)
-    deposit_file = pd.read_csv(deposit_file_name)
-    loan_file = pd.read_csv(loan_file_name)
-    savings_file = pd.read_csv(savings_file_name)
+    # if settings.DATA_FROM_DB:
+
+    customers_file = from_sql("Customers_1")
+    deposit_file = from_sql("Deposit_1")
+    loan_file = from_sql("LoanData_1")
+    savings_file = from_sql("Savingdata_1")
+
+    def __init__(self, request):
+        print(json.loads(request.body))
+        self.period = json.loads(request.body).get("period", "0/0").split("/")
+        self.start = self.period[0]
+        self.end = self.period[1]
+        # print(self.period)
+
+    # else:
+
+    #     customers_file = pd.read_csv(customers_file_name)
+    #     deposit_file = pd.read_csv(deposit_file_name)
+    #     loan_file = pd.read_csv(loan_file_name)
+    #     savings_file = pd.read_csv(savings_file_name)
 
 
     def gender_per_branch(self):
 
+        if self.start != '0':
+
+            self.customers_file["JoinDate"] = pd.to_datetime(self.customers_file["JoinDate"])
+            self.customers_file["JoinDate"] = self.customers_file[(self.customers_file['JoinDate'] > self.start) & (self.customers_file['JoinDate'] <= self.end)]
+
         cust_per_branch = self.customers_file.groupby("Branch").count().to_dict()["Gender"]
-        cust_per_branch
 
         gender_per_branch = pd.pivot_table(self.customers_file, values='Nationality', index=['Gender'], columns=['Branch'], aggfunc=np.count_nonzero)
         
@@ -39,6 +86,11 @@ class Data:
 
     def grouped_customers_by_month(self):
 
+        if self.start != '0':
+
+            self.customers_file["JoinDate"] = pd.to_datetime(self.customers_file["JoinDate"])
+            self.customers_file = self.customers_file[(self.customers_file['JoinDate'] > self.start) & (self.customers_file['JoinDate'] <= self.end)]
+        
         self.customers_file["JoinDate"] = pd.to_datetime(self.customers_file["JoinDate"])
         self.customers_file["JoinMonth"] = self.customers_file.JoinDate.dt.month_name().str.slice(stop = 3) + "-" + self.customers_file.JoinDate.dt.year.astype("str")
         customers_file_sorted = self.customers_file.sort_values(by=['JoinDate'])
@@ -64,6 +116,11 @@ class Data:
     # ## LOANS SECTION
     def number_of_loans_per_segment(self):
 
+        if self.start != '0':
+
+            self.loan_file["Approval.Date"] = pd.to_datetime(self.loan_file["Approval.Date"])
+            self.loan_file = self.loan_file[(self.loan_file['Approval.Date'] > self.start) & (self.loan_file['Approval.Date'] <= self.end)]
+
         loans_per_segment_count = self.loan_file.groupby("Segment").count().reset_index()[["Segment","Clined ID"]]
         loans_per_segment_count.columns = ["Segment","NumberOfLoans"]
         
@@ -71,22 +128,40 @@ class Data:
 
     def loans_amount_per_segment(self):
 
+        if self.start != '0':
+
+            self.loan_file["Approval.Date"] = pd.to_datetime(self.loan_file["Approval.Date"])
+            self.loan_file = self.loan_file[(self.loan_file['Approval.Date'] > self.start) & (self.loan_file['Approval.Date'] <= self.end)]
+
+        self.loan_file[["Approved.Amount", "outstanding","Disbursement", "paid_principal"]] = self.loan_file[["Approved.Amount", "outstanding","Disbursement", "paid_principal"]].astype("int")
         loans_per_segment_sum = self.loan_file.groupby("Segment").sum().reset_index()[["Segment","Disbursement", "outstanding"]]
         
         return loans_per_segment_sum.to_dict("list")
 
     def general_perfomance_of_loans(self):
         
-        loans_per_segment_sum = self.loan_file.sum(numeric_only=True).reset_index()
+        if self.start != '0':
+
+            self.loan_file["Approval.Date"] = pd.to_datetime(self.loan_file["Approval.Date"])
+            self.loan_file = self.loan_file[(self.loan_file['Approval.Date'] > self.start) & (self.loan_file['Approval.Date'] <= self.end)]
+        
+        self.loan_file[["Approved.Amount", "outstanding","Disbursement", "paid_principal"]] = self.loan_file[["Approved.Amount", "outstanding","Disbursement", "paid_principal"]].astype("int")
+
+        loans_per_segment_sum = self.loan_file[["Approved.Amount", "outstanding","Disbursement", "paid_principal"]].sum(numeric_only=True).reset_index()
 
         return loans_per_segment_sum.to_dict("records")
 
     def loan_performance_over_time(self):
 
+        if self.start != '0':
+
+            self.loan_file["Approval.Date"] = pd.to_datetime(self.loan_file["Approval.Date"])
+            self.loan_file = self.loan_file[(self.loan_file['Approval.Date'] > self.start) & (self.loan_file['Approval.Date'] <= self.end)]
+
         loan_file_copy = self.loan_file[:]
 
-
         loan_file_copy["Approval_date"] = pd.to_datetime(self.loan_file["Approval.Date"])
+        loan_file_copy[["Approved.Amount", "Disbursement", "Balance", "paid_principal", "unpaid_principal", "outstanding"]] = loan_file_copy[["Approved.Amount", "Disbursement", "Balance", "paid_principal", "unpaid_principal", "outstanding"]].astype(int)
         loan_file_copy = loan_file_copy.sort_values(by=['Approval_date'])
 
 
@@ -97,6 +172,14 @@ class Data:
         return loan_peformance_per_time.to_dict("index")
 
     def deposits_vs_saves(self):
+
+        if self.start != '0':
+
+            self.deposit_file["dateofdeposit"] = pd.to_datetime(self.deposit_file["dateofdeposit"])
+            self.deposit_file = self.deposit_file[(self.deposit_file['dateofdeposit'] > self.start) & (self.deposit_file['dateofdeposit'] <= self.end)]
+            
+            self.savings_file["savingDate"] = pd.to_datetime(self.savings_file["savingDate"])
+            self.savings_file = self.savings_file[(self.savings_file['savingDate'] > self.start) & (self.savings_file['savingDate'] <= self.end)]
 
         self.deposit_file["deposit_date"] = pd.to_datetime(self.deposit_file["dateofdeposit"])
         deposit_file_copy = self.deposit_file[:]
@@ -120,9 +203,10 @@ class Data:
         full_deps_saves = full_deps_saves.sort_values(by = "trans_date")
 
 
+
         full_deps_saves["date_str"] = full_deps_saves.trans_date.dt.month_name().str.slice(stop = 3) + "-" + full_deps_saves.trans_date.dt.year.astype("str") 
 
-
+        full_deps_saves["depositamount"] = full_deps_saves["depositamount"].astype("int")
         grouped_saves_deps = full_deps_saves.groupby(full_deps_saves["date_str"], sort = False).sum()
 
         return grouped_saves_deps.to_dict("index")
@@ -165,7 +249,6 @@ class Token(models.Model):
         self.is_active = True
         self.save(is_new = True)
 
-        print(self.token)
 
         return self.token
     
@@ -173,7 +256,7 @@ class Token(models.Model):
     def authorize(request):
         
         data = json.loads(request.body)
-        print(data)
+
         token  = data["auth"]
         username  = data["username"]
 

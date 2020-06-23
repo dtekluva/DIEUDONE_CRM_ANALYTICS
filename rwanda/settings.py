@@ -12,6 +12,30 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+#################################
+#################################
+######                     ######
+#### DATA DATABASE SETTINGS #####
+######                     ######
+#################################
+#################################
+
+DATA_FROM_DB = True # DETERMINE WHETHER TO USE DB OR JUST READ FROM ORIGINAL CSV FILES
+
+HOST = "localhost"
+USERNAME = "root"
+PASSWORD = ""
+DB = "db"
+
+#################################
+#################################
+######                     ######
+####    DATA DATABASE END   #####
+######                     ######
+#################################
+#################################
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,7 +51,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
-
 
 # Application definition
 
