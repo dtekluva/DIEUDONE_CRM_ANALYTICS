@@ -50,17 +50,25 @@ class Data:
 
     # if settings.DATA_FROM_DB:
 
-    customers_file = from_sql("Customers_1")
-    deposit_file = from_sql("Deposit_1")
-    loan_file = from_sql("LoanData_1")
-    savings_file = from_sql("Savingdata_1")
-
-    def __init__(self, request):
+    def __init__(self, request, branch):
         print(json.loads(request.body))
         self.period = json.loads(request.body).get("period", "0/0").split("/")
         self.start = self.period[0]
         self.end = self.period[1]
-        # print(self.period)
+        self.branch = branch
+
+        if self.branch == "OVERVIEW":
+            self.customers_file = from_sql("Customers_1")
+            self.deposit_file = from_sql("Deposit_1")
+            self.loan_file = from_sql("LoanData_1")
+            self.savings_file = from_sql("Savingdata_1")
+        
+        elif self.branch != "OVERVIEW":
+            customers_file = from_sql("Customers_1")
+            self.customers_file = customers_file[customers_file.Branch.str.contains(self.branch)]
+            self.deposit_file = from_sql("Deposit_1")[from_sql("Deposit_1").Branch.str.contains(self.branch)]
+            self.loan_file = from_sql("LoanData_1")[from_sql("LoanData_1").Branch.str.contains(self.branch)]
+            self.savings_file = from_sql("Savingdata_1")[from_sql("Savingdata_1").Branch.str.contains(self.branch)]
 
     # else:
 

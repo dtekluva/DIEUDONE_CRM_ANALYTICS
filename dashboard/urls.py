@@ -23,10 +23,10 @@ urlpatterns = [
     # path('', views.index, name='index'),
     path('login_view', views.login_view, name='login_view'),
     path('logout_view', views.logout_view, name='logout_view'),
-    path('get_gender_per_branch', views.get_gender_per_branch, name='get_gender_per_branch'),
-    path('get_deposits_vs_saves', views.get_deposits_vs_saves, name='get_deposits_vs_saves'),
-    path('get_loans_summary', views.get_loans_summary, name='get_loans_summary'),
-    path('get_loan_performance_over_time', views.get_loan_performance_over_time, name='get_loan_performance_over_time'),
-    path('get_number_of_loans_per_segment', views.get_number_of_loans_per_segment, name='get_number_of_loans_per_segment'),
-    path('get_grouped_customers_by_month', views.get_grouped_customers_by_month, name='get_grouped_customers_by_month')
+    path('get_gender_per_branch/<str:branch>', views.get_gender_per_branch, name='get_gender_per_branch'),
+    path('get_deposits_vs_saves/<str:branch>', views.get_deposits_vs_saves, name='get_deposits_vs_saves'),
+    path('get_loans_summary/<str:branch>', views.get_loans_summary, name='get_loans_summary'),
+    path('get_loan_performance_over_time/<str:branch>', views.get_loan_performance_over_time, name='get_loan_performance_over_time'),
+    path('get_number_of_loans_per_segment/<str:branch>', views.get_number_of_loans_per_segment, name='get_number_of_loans_per_segment'),
+    path('get_grouped_customers_by_month/<str:branch>', views.get_grouped_customers_by_month, name='get_grouped_customers_by_month')
 ]

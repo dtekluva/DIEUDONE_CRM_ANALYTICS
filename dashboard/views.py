@@ -30,79 +30,79 @@ def logout_view(request):
     return CORS(HttpResponse(json.dumps({"response":"True"}))).allow_all()
 
 @csrf_exempt
-def get_gender_per_branch(request):
-
+def get_gender_per_branch(request, branch):
+    
     token = Token().authorize(request)
 
     if token.get("authenticated"):
         
-        data = Data(request).gender_per_branch()
-        
-        return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
-
-    return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
-
-@csrf_exempt
-def get_grouped_customers_by_month(request):
-
-    token = Token().authorize(request)
-
-    if token.get("authenticated"):
-
-        data = Data(request).grouped_customers_by_month()
+        data = Data(request, branch).gender_per_branch()
         
         return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
 
     return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
 
 @csrf_exempt
-def get_number_of_loans_per_segment(request):
-
+def get_grouped_customers_by_month(request, branch):
+    
     token = Token().authorize(request)
 
     if token.get("authenticated"):
 
-        data = Data(request).number_of_loans_per_segment()
-        grouped = Data(request).loans_amount_per_segment()
+        data = Data(request, branch).grouped_customers_by_month()
+        
+        return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
+
+    return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
+
+@csrf_exempt
+def get_number_of_loans_per_segment(request, branch):
+    
+    token = Token().authorize(request)
+
+    if token.get("authenticated"):
+
+        data = Data(request, branch).number_of_loans_per_segment()
+        grouped = Data(request, branch).loans_amount_per_segment()
         
         return CORS(HttpResponse(json.dumps({"response":{"summarized":data, "grouped":grouped}, "status": True}))).allow_all()
 
     return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
 
 @csrf_exempt
-def get_loan_performance_over_time(request):
+def get_loan_performance_over_time(request, branch):
 
     token = Token().authorize(request)
 
     if token.get("authenticated"):
 
-        data = Data(request).loan_performance_over_time()
+        data = Data(request, branch).loan_performance_over_time()
         
         return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
 
     return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
 
 @csrf_exempt
-def get_deposits_vs_saves(request):
+def get_deposits_vs_saves(request, branch):
 
     token = Token().authorize(request)
 
     if token.get("authenticated"):
         
-        data = Data(request).deposits_vs_saves()
+        data = Data(request, branch).deposits_vs_saves()
         
         return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
 
     return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
 
 @csrf_exempt
-def get_loans_summary(request):
+def get_loans_summary(request, branch):
 
     token = Token().authorize(request)
 
     if token.get("authenticated"):
         
-        data = Data(request).general_perfomance_of_loans()
+        data = Data(request, branch).general_perfomance_of_loans()
         
         return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
 
