@@ -173,6 +173,7 @@ def get_device_details(request, device):
     device = devices[0]
 
     last_amp = Reading.objects.all().last()
+    max_amp = Reading.objects.all().order_by("-current").first()
     if devices.exists():
         response = {
             "units" : device.device_id,
@@ -180,7 +181,8 @@ def get_device_details(request, device):
             "total_kwh" : device.total_kwh,
             "last_kwh" : device.last_kwh,
             "new_kwh" : device.new_kwh,
-            "last_amp": last_amp.current
+            "last_amp": last_amp.current,
+            "max_amp": max_amp.current
         }
 
     return CORS(HttpResponse(json.dumps(response))).allow_all()
