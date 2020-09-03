@@ -2,7 +2,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from dashboard.models import *
-from dashboard.models import *
 import json
 
 from django.contrib.auth import authenticate, login, logout
@@ -108,6 +107,53 @@ def get_loans_summary(request, branch):
 
     return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
 
+@csrf_exempt
+def post_units(request, device, units, voltage, current):
+
+    device = Device.objects.filter(device_id = device)
+
+
+    if device.exists():        
+
+        device = device[0]
+        device.total_kwh = device.total_kwh + (device.last_kwh - units)
+        device.save()
+
+        Reading.objects.create(device = device, voltage = voltage, current = current, total_kwh = device.total_kwh, time = datetime.datetime.now())
+
+        return CORS(HttpResponse(1)).allow_all()
+
+
+    return CORS(HttpResponse(0)).allow_all()
+
+@csrf_exempt
+def check_units(request, device):
+
+    device = Device.objects.filter(device_id = device)
+    print(device[0])
+    new_kwh = 2
+
+    if device.exists():        
+
+        new_kwh = device[0].new_kwh
+        device[0].new_kwh = 0
+        device[0].save()
+
+        return CORS(HttpResponse(new_kwh)).allow_all()
+
+
+    return CORS(HttpResponse(new_kwh)).allow_all()
+
+@csrf_exempt
+def relay_status(request, device):
+    
+    device = Device.objects.filter(device_id = device)
+    relay_status = 2
+
+    if device.exists():
+        relay_status = int(device[0].relay_status)
+
+    return CORS(HttpResponse(relay_status)).allow_all()
 
 
 @csrf_exempt

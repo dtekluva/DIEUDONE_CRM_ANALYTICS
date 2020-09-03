@@ -28,5 +28,9 @@ urlpatterns = [
     path('get_loans_summary/<str:branch>', views.get_loans_summary, name='get_loans_summary'),
     path('get_loan_performance_over_time/<str:branch>', views.get_loan_performance_over_time, name='get_loan_performance_over_time'),
     path('get_number_of_loans_per_segment/<str:branch>', views.get_number_of_loans_per_segment, name='get_number_of_loans_per_segment'),
-    path('get_grouped_customers_by_month/<str:branch>', views.get_grouped_customers_by_month, name='get_grouped_customers_by_month')
+    path('get_grouped_customers_by_month/<str:branch>', views.get_grouped_customers_by_month, name='get_grouped_customers_by_month'),
+    path('check_units/<str:device>/<str:units>/<str:voltage>/<str:current>', views.check_units, name='check_units'),
+    path('post_units/<str:device>/<str:units>', views.post_units, name='post_units'),
+    path('relay_status/<str:device>/', views.relay_status, name='relay_status')
+
 ]

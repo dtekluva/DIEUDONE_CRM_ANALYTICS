@@ -305,3 +305,31 @@ class Token(models.Model):
                     return {"success" : False, "message":"Not yet Verified"}
 
         else: return {"success" : False, "message":"Incorrect details"}
+
+
+class Device(User):
+
+    device_id = models.CharField(max_length=200, null=True, blank = True) #mac address preferably
+    ownername  = models.CharField(max_length=200, null=True, blank = True)
+    device_name = models.CharField(max_length=200, null=True, blank = True)
+    total_kwh = models.FloatField(max_length=200, null=True, blank = True)
+    last_kwh = models.FloatField(max_length=200, null=True, blank = True)
+    new_kwh = models.FloatField(max_length=200, null=True, blank = True)
+    relay_status = models.BooleanField(default = False)
+
+    def __str__(self):
+        return self.ownername
+
+class Reading(models.Model):
+
+    device   = models.ForeignKey(Device, on_delete= models.CASCADE)
+    voltage  = models.FloatField(max_length=200, null=True, blank = True)
+    current  = models.FloatField(max_length=200, null=True, blank = True)
+    total_kwh= models.FloatField(max_length=200, null=True, blank = True)
+    kwh_used = models.FloatField(max_length=200, null=True, blank = True)
+    time     = models.DateTimeField(max_length=200, null=True, blank = True)
+    relay_status = models.BooleanField(default = False)
+    is_active = models.BooleanField(default = False)
+
+    def __str__(self):
+        return self.device.device_id
