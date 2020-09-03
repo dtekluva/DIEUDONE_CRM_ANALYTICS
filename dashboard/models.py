@@ -307,8 +307,9 @@ class Token(models.Model):
         else: return {"success" : False, "message":"Incorrect details"}
 
 
-class Device(User):
+class Device(models.Model):
 
+    user      = models.ForeignKey(User, on_delete= models.CASCADE, default = 1)
     device_id = models.CharField(max_length=200, null=True, blank = True) #mac address preferably
     ownername  = models.CharField(max_length=200, null=True, blank = True)
     device_name = models.CharField(max_length=200, null=True, blank = True)

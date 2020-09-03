@@ -107,19 +107,30 @@ def get_loans_summary(request, branch):
 
     return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
 
+
+
+
+#########################################################################################################################
+#########################################################################################################################
+#########################################################################################################################
 @csrf_exempt
 def post_units(request, device, units, voltage, current):
 
     device = Device.objects.filter(device_id = device)
 
 
-    if device.exists():        
+    if device.exists():       
+        units = int(units) 
 
         device = device[0]
+        kwh_used = device.last_kwh - units
         device.total_kwh = device.total_kwh + (device.last_kwh - units)
+        device.last_kwh = units
         device.save()
+        
+        print(device.last_kwh, units)
 
-        Reading.objects.create(device = device, voltage = voltage, current = current, total_kwh = device.total_kwh, time = datetime.datetime.now())
+        Reading.objects.create(device_id = device.id, voltage = voltage, current = current, kwh_used = kwh_used, total_kwh = device.total_kwh, time = datetime.datetime.now())
 
         return CORS(HttpResponse(1)).allow_all()
 
@@ -127,17 +138,17 @@ def post_units(request, device, units, voltage, current):
     return CORS(HttpResponse(0)).allow_all()
 
 @csrf_exempt
-def check_units(request, device):
+def check_new_units(request, device):
 
-    device = Device.objects.filter(device_id = device)
-    print(device[0])
+    devices = Device.objects.filter(device_id = device)
+    device = devices[0]
     new_kwh = 2
 
-    if device.exists():        
+    if devices.exists():        
 
-        new_kwh = device[0].new_kwh
-        device[0].new_kwh = 0
-        device[0].save()
+        new_kwh = device.new_kwh
+        device.new_kwh = 0
+        device.save()
 
         return CORS(HttpResponse(new_kwh)).allow_all()
 
@@ -148,7 +159,7 @@ def check_units(request, device):
 def relay_status(request, device):
     
     device = Device.objects.filter(device_id = device)
-    relay_status = 2
+    relay_status = 1
 
     if device.exists():
         relay_status = int(device[0].relay_status)
