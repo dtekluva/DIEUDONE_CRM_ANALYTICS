@@ -166,6 +166,23 @@ def relay_status(request, device):
 
     return CORS(HttpResponse(relay_status)).allow_all()
 
+@csrf_exempt
+def get_device_details(request, device):
+    
+    device = Device.objects.filter(device_id = device)
+    relay_status = 1
+
+    if device.exists():
+        response = {
+            "units" : device.device_id,
+            "ownername" : device.ownername,
+            "total_kwh" : device.total_kwh,
+            "last_kwh" : device.last_kwh,
+            "new_kwh" : device.new_kwh
+        }
+
+    return CORS(HttpResponse(relay_status)).allow_all()
+
 
 @csrf_exempt
 class CORS(HttpResponse):

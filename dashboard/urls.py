@@ -31,6 +31,7 @@ urlpatterns = [
     path('get_grouped_customers_by_month/<str:branch>', views.get_grouped_customers_by_month, name='get_grouped_customers_by_month'),
     path('post_units/<str:device>/<str:units>/<str:voltage>/<str:current>', views.post_units, name='post_units'),
     path('check_new_units/<str:device>', views.check_new_units, name='check_new_units'),
-    path('relay_status/<str:device>/', views.relay_status, name='relay_status')
+    path('relay_status/<str:device>/', views.relay_status, name='relay_status'),
+    path('get_device_details/<str:device>/', views.get_device_details, name='get_device_details')
 
 ]
