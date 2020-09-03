@@ -150,10 +150,10 @@ def check_new_units(request, device):
         device.new_kwh = 0
         device.save()
 
-        return CORS(HttpResponse(float(new_kwh))).allow_all()
+        return CORS(HttpResponse(int(new_kwh))).allow_all()
 
 
-    return CORS(HttpResponse(new_kwh)).allow_all()
+    return CORS(HttpResponse(int(new_kwh))).allow_all()
 
 @csrf_exempt
 def relay_status(request, device):
