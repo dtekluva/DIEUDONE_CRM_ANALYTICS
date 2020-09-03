@@ -169,10 +169,9 @@ def relay_status(request, device):
 @csrf_exempt
 def get_device_details(request, device):
     
-    device = Device.objects.filter(device_id = device)
-    relay_status = 1
-
-    if device.exists():
+    devices = Device.objects.filter(device_id = device)
+    device = devices[0]
+    if devices.exists():
         response = {
             "units" : device.device_id,
             "ownername" : device.ownername,
