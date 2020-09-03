@@ -181,7 +181,7 @@ def get_device_details(request, device):
             "new_kwh" : device.new_kwh
         }
 
-    return CORS(HttpResponse(relay_status)).allow_all()
+    return CORS(HttpResponse(json.dumps(response))).allow_all()
 
 
 @csrf_exempt
