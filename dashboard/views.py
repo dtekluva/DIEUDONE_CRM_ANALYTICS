@@ -164,10 +164,10 @@ def relay_status(request, device):
     if device.exists():
         relay_status = int(device[0].relay_status)
 
-        if relay_status: relay_status = 900001
-        if not relay_status: relay_status = 100009
+        if relay_status: relay_status = 500
+        if not relay_status: relay_status = 600
 
-    return CORS(HttpResponse(relay_status)).allow_all()
+    return CORS(HttpResponse(int(relay_status))).allow_all()
 
 @csrf_exempt
 def get_device_details(request, device):
