@@ -243,6 +243,8 @@ class Attempt(models.Model):
 
         attempt.save()
 
+        return status
+
 
     def display_all_attempts():
 
