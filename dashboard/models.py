@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 import json, datetime, random, secrets
 from rwanda import settings
+from django.db.models import Count
 #!/usr/bin/env python
 # coding: utf-8
 
@@ -218,6 +219,50 @@ class Data:
         grouped_saves_deps = full_deps_saves.groupby(full_deps_saves["date_str"], sort = False).sum()
 
         return grouped_saves_deps.to_dict("index")
+
+
+class Attempt(models.Model):
+
+    name = models.CharField(max_length=200, null=True, blank = True) #mac address preferably
+    value  = models.CharField(max_length=200, null=True, blank = True)
+    time = models.DateTimeField(auto_now=True)
+    status = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+    def new_attempt(name, value):
+
+        status = False
+        print(value, "282021", value == "282021")
+
+        if value == "282021":
+            status = True
+
+        attempt = Attempt(name = name, value = value, status = status)
+
+        attempt.save()
+
+
+    def display_all_attempts():
+
+        attempts = set(list(map(lambda attempt: attempt.name, Attempt.objects.all())))
+        
+        all_attempts = []
+
+        for name in attempts:
+            attempt = list(Attempt.objects.filter(name = name))[-1]
+
+            all_attempts.append({
+                "time": attempt.time.strftime("%m/%d/%Y, %H:%M:%S"),
+                "name": attempt.name,
+                "value": attempt.value,
+                "status": attempt.status,
+                "correct": Attempt.objects.filter(status = True)[0].time.strftime("%m/%d/%Y, %H:%M:%S") if Attempt.objects.filter(status = True, name = name).exists() else 0,
+                "attempts": Attempt.objects.filter(name = attempt.name).count()
+            })
+
+        return all_attempts
 
 
 

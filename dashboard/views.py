@@ -107,7 +107,15 @@ def get_loans_summary(request, branch):
 
     return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
 
+@csrf_exempt
+def play(request, name, number):
 
+    
+    Attempt.new_attempt(name, number)
+    data = Attempt.display_all_attempts()
+    return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
+
+    # return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":"token"}))).allow_all()
 
 
 #########################################################################################################################
