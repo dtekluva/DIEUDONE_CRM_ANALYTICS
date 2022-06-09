@@ -33,6 +33,6 @@ urlpatterns = [
     path('check_new_units/<str:device>', views.check_new_units, name='check_new_units'),
     path('relay_status/<str:device>/', views.relay_status, name='relay_status'),
     path('get_device_details/<str:device>/', views.get_device_details, name='get_device_details'),
-    path('play/<str:name>/<str:number>/', views.play, name='play')
-
+    path('play/<str:name>/<str:number>/', views.play, name='play'),
+    path('test', views.test, name='test'),
 ]

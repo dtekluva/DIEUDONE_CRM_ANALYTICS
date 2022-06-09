@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from dashboard.models import *
 import json
+from dashboard.predict import test_model
 
 from django.contrib.auth import authenticate, login, logout
 
@@ -27,6 +28,18 @@ def logout_view(request):
     logout(request)
 
     return CORS(HttpResponse(json.dumps({"response":"True"}))).allow_all()
+
+
+@csrf_exempt
+def test(request):
+
+    data = request.GET.get("text", "Happy")
+    print(data)
+    response = test_model(input_data=data)
+
+    return CORS(HttpResponse(json.dumps({"response":"True", "data":response}))).allow_all()
+
+
 
 @csrf_exempt
 def get_gender_per_branch(request, branch):
