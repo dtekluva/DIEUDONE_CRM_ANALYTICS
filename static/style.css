@@ -128,7 +128,7 @@ body {
   position: relative;
   z-index: 2;
   border-radius: 15px;
-  background: url("/img.jpg");
+  background: url("static/img.jpg");
   -webkit-transform: perspective(512px) translate3d(0, 0, 0);
           transform: perspective(512px) translate3d(0, 0, 0);
   -webkit-transition: all 0.4s cubic-bezier(0.125, 0.625, 0.125, 0.875);
