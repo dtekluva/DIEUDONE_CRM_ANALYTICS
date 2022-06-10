@@ -12,7 +12,7 @@ postToServer = function(){
         }
     }
     // Fake api for making post requests
-    let fetchRes = fetch("http://134.209.196.208/static/", options);
+    let fetchRes = fetch("http://134.209.196.208/test?text=I am happy today sha", options);
 
     fetchRes.then(res =>
         res.json()).then(d => {
