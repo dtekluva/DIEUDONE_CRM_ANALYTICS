@@ -1,7 +1,8 @@
 triggerBtn = document.getElementById("trigger");
+textArea = document.getElementById("textArea");
 
 
-postToServer = function(){
+postToServer = function(text){
     // Options to be given as parameter
     // in fetch for making requests
     // other then GET
@@ -12,15 +13,17 @@ postToServer = function(){
         }
     }
     // Fake api for making post requests
-    let fetchRes = fetch("http://134.209.196.208/test?text=I am happy today sha", options);
+    let fetchRes = fetch("http://134.209.196.208/test?text=" + text, options);
 
     fetchRes.then(res =>
         res.json()).then(d => {
             console.log(d)
         })
 }
-triggerBtn.addEventListener("click", function() {
-    alert("WOW..!! this is old");
-    postToServer();
+triggerBtn.addEventListener("click", function(e) {
+    // alert("WOW..!! this is old");
+    console.log(textArea.value)
+    let text = textArea.value
+    postToServer(text);
 })
 
