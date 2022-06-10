@@ -148,21 +148,28 @@ def test_model(input_data: str = TEST_REVIEW):
                     "don't want to be here",
                     "die alone",
                     "go to sleep forever",
+                    "last wishes",
                     ]
 
 
     for word in watch_words:
 
-        if word in input_data:
+        if word in input_data.casefold():
             parsed_text.cats["pos"] = parsed_text.cats["pos"] * 0.2
             parsed_text.cats["neg"] = parsed_text.cats["neg"] * 10
+
     if "happy" in input_data.casefold():
         parsed_text.cats["pos"] = parsed_text.cats["pos"] * 1.5
         parsed_text.cats["neg"] = parsed_text.cats["neg"] * 0.5
 
     positivity_ratio = parsed_text.cats["pos"] /parsed_text.cats["neg"] 
 
-    if parsed_text.cats["pos"] > parsed_text.cats["neg"] and positivity_ratio > 10:
+    if positivity_ratio < 10:
+        
+        prediction = "Negative"
+        score = parsed_text.cats["neg"]
+
+    elif parsed_text.cats["pos"] > parsed_text.cats["neg"]:
         prediction = "Positive"
         score = parsed_text.cats["pos"]
     else:
