@@ -164,8 +164,8 @@ def test_model(input_data: str = TEST_REVIEW):
 
     positivity_ratio = parsed_text.cats["pos"] /parsed_text.cats["neg"] 
 
-    if positivity_ratio < 10:
-        
+    if positivity_ratio < 3:
+
         prediction = "Negative"
         score = parsed_text.cats["neg"]
 
