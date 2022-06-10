@@ -133,7 +133,12 @@ body {
 }
 
 .button {background-color: #4CAF50;} /* Green */
-.button2 {background-color: #008CBA;} /* Blue */
+.button2 {
+  background-color: #ebffa5;
+  font-size: 32px;
+  margin: 10px 2px;
+  width: 100%;
+} /* Blue */
 
 .player-cover {
   width: 300px;

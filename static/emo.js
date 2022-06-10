@@ -1,11 +1,13 @@
-triggerBtn = document.getElementById("trigger");
-textArea = document.getElementById("textArea");
+let triggerBtn = document.getElementById("trigger");
+let textArea = document.getElementById("textArea");
+let sentiment = document.getElementById("sentiment");
 
 
 postToServer = function(text){
     // Options to be given as parameter
     // in fetch for making requests
     // other then GET
+    
     let options = {
         method: 'GET',
         headers: {
@@ -18,8 +20,11 @@ postToServer = function(text){
     fetchRes.then(res =>
         res.json()).then(d => {
             console.log(d)
+            sentiment.innerText = d.data.Predicted_sentiment
+            return d
         })
 }
+
 triggerBtn.addEventListener("click", function(e) {
     // alert("WOW..!! this is old");
     console.log(textArea.value)
@@ -29,6 +34,12 @@ triggerBtn.addEventListener("click", function(e) {
         alert("Text area Cannot Be empty")
         return;
     };
-    postToServer(text);
+
+    if (text.length < 15){
+        alert("Enter at least 15 characters")
+        return;
+    }
+    let response = postToServer(text);
+
 })
 
