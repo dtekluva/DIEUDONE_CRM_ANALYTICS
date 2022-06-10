@@ -23,7 +23,12 @@ postToServer = function(text){
 triggerBtn.addEventListener("click", function(e) {
     // alert("WOW..!! this is old");
     console.log(textArea.value)
+
     let text = textArea.value
+    if (text == ""){
+        alert("Text area Cannot Be empty")
+        return;
+    };
     postToServer(text);
 })
 
