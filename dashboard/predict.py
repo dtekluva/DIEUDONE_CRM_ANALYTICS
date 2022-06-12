@@ -113,7 +113,8 @@ def test_model(input_data: str = TEST_REVIEW):
     parsed_text = loaded_model(input_data)
     # Determine prediction to return
 
-    watch_words = ["hate", 
+    watch_words = [
+                    "hate", 
                     "suicide", 
                     "die", 
                     "sad", "hurt", "harm", "silent", 
@@ -126,6 +127,12 @@ def test_model(input_data: str = TEST_REVIEW):
                     "never change",
                     "dead", "death",
                     "depress",
+                    "kill",
+                    "dying",
+                    "killing",
+                    "death",
+                    "rob",
+                    "dead",
                     "unstable",
                     "fat",
                     "ugly",
@@ -149,14 +156,15 @@ def test_model(input_data: str = TEST_REVIEW):
                     "die alone",
                     "go to sleep forever",
                     "last wishes",
+                    "shoot", 
+                    "shot", "desecrate", "rape"
                     ]
-
 
     for word in watch_words:
 
         if word in input_data.casefold():
-            parsed_text.cats["pos"] = parsed_text.cats["pos"] * 0.2
-            parsed_text.cats["neg"] = parsed_text.cats["neg"] * 10
+            parsed_text.cats["pos"] = parsed_text.cats["pos"] * 0.1
+            parsed_text.cats["neg"] = parsed_text.cats["neg"] * 50
 
     if "happy" in input_data.casefold():
         parsed_text.cats["pos"] = parsed_text.cats["pos"] * 1.5
