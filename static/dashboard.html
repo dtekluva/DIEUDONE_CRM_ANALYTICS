@@ -12,17 +12,17 @@
   <div class="wrapper2">
     
  
-    <div><img style="opacity: 0%;" src="/static/logo.jfif" alt=""></div>
+    <div><img src="/static/logo.jfif" alt=""></div>
   </div>
   <div>
   </div>
   <div class="wrapper" id="app">
     <audio src="/static/WizKid - Essence (Audio) ft. Tems.mp3"></audio>
     <div class="player">
-      <h3 style="text-align: center; text-decoration: underline; margin-bottom: 1vw;">SIGN IN TO BEGIN</h3>
-      <input placeholder="Enter Email here..." style="width: 100%; margin: 20px 20px 20px 0px; height: 50px; font-size: 30px;" name="" class="login-e" id="user" ></input>
-      <input placeholder="Enter Password here..." style="width: 100%; margin: 20px 20px 20px 0px; height: 50px; font-size: 30px;" name="" class="login-p" id="pass" type="password" ></input>
-      <button id="trigger" class="button" type="button">Login</button>
+      <h3 style="text-align: center; text-decoration: underline; margin-bottom: 1vw;">TEXT EMOTIONS DETECTOR</h3>
+      <textarea name="" id="textArea" cols="45" rows="5"></textarea>
+      <button id="trigger" class="button" type="button">Test Sentiment</button>
+      <button id="sentiment" class="button2" type="button">---</button>
     </div>
       <div v-cloak></div>
     </div>
@@ -80,5 +80,6 @@
   </svg>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.18/vue.min.js"></script>
-<script src="login.js"></script>
+<script src="main.js"></script>
+<script src="emo.js"></script>
 </html> 
