@@ -65,8 +65,8 @@ postToServer = function(text){
     lga = (findGetParameter("lga"))
     email = (findGetParameter("email"))
     // Fake api for making post requests
-    // let fetchRes = fetch("http://134.209.196.208/send_mail?lga="+ lga + "&email=" + email, options);
-    let fetchRes = fetch("http://localhost:8000/send_mail?lga="+ lga + "&email=" + email, options);
+    let fetchRes = fetch("http://134.209.196.208/send_mail?lga="+ lga + "&email=" + email, options);
+    // let fetchRes = fetch("http://localhost:8000/send_mail?lga="+ lga + "&email=" + email, options);
 
     fetchRes.then(res =>
         res.json()).then(d => {
