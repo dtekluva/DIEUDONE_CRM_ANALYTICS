@@ -1,7 +1,12 @@
 let triggerBtn = document.getElementById("trigger");
 let textArea = document.getElementById("textArea");
 let sentiment = document.getElementById("sentiment");
-
+let name = document.getElementById("name");
+let email = "";
+let lga = "";
+let total = 1;
+let negative_count = 1;
+let positive_count = 1;
 
 postToServer = function(text){
     // Options to be given as parameter
@@ -22,9 +27,62 @@ postToServer = function(text){
         res.json()).then(d => {
             console.log(d)
             sentiment.innerText = d.data.Predicted_sentiment
-            return d
-        })
-}
+            if (d.data.Predicted_sentiment == "Negative"){
+                negative_count ++;
+            }else{
+                positive_count ++;
+
+            }
+            total++;
+            positivity = (positive_count/negative_count) * 100
+            console.log(positivity)
+            if (total > 10 & positivity < 80){
+                sendEmail();
+                 Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: `Hello, Your entries are over ${(100-positivity).toLocaleString()}% negative comments.`,
+                    footer: '<a href="">You will be redirected to a psychiatrist. Please check you email</a>'
+                  })
+                }
+                
+                return d
+            })
+        }
+
+    sendEmail = function(text){
+    // Options to be given as parameter
+    // in fetch for making requests
+    // other then GET
+    
+    let options = {
+        method: 'GET',
+        headers: {
+            'Content-Type':'application/json;charset=utf-8'
+        }
+    }
+
+    lga = (findGetParameter("lga"))
+    email = (findGetParameter("email"))
+    // Fake api for making post requests
+    // let fetchRes = fetch("http://134.209.196.208/send_mail?lga="+ lga + "&email=" + email, options);
+    let fetchRes = fetch("http://localhost:8000/send_mail?lga="+ lga + "&email=" + email, options);
+
+    fetchRes.then(res =>
+        res.json()).then(d => {
+            console.log(d)
+            if (0){
+                 Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: `Hello, Your entries are over ${(100-positivity).toLocaleString()}% negative comments.`,
+                    footer: '<a href="">You will be redirected to a psychiatrist. Please check you email</a>'
+                  })
+                }
+                
+                return d
+            })
+        }
 
 triggerBtn.addEventListener("click", function(e) {
     // alert("WOW..!! this is old");
@@ -44,3 +102,17 @@ triggerBtn.addEventListener("click", function(e) {
 
 })
 
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    location.search
+        .substr(1)
+        .split("&")
+        .forEach(function (item) {
+          tmp = item.split("=");
+          if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+}
+
+name.innerText = (findGetParameter("email").split("@")[0])

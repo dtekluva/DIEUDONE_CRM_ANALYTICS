@@ -124,6 +124,8 @@ def test_model(input_data: str = TEST_REVIEW):
                     "loss",
                     "obssession",
                     "negative",
+                    "waste of money",
+                    "rubbish",
                     "never change",
                     "dead", "death",
                     "depress",

@@ -1,33 +1,10 @@
-from django.http import HttpResponse, HttpResponseRedirect
+import imp
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
 from dashboard.models import *
 import json
 from dashboard.predict import test_model
-
-from django.contrib.auth import authenticate, login, logout
-
-@csrf_exempt
-def login_view(request):
-
-    if request.is_ajax:
-
-        token = Token().authenticate(request)
-
-        return CORS(HttpResponse(json.dumps({"response":"True", "status": token }))).allow_all()
-        # Redirect to a success page.
-
-    else:
-        # Return an 'invalid login' error message.
-    
-        return CORS(HttpResponse(json.dumps({"response":"False"}))).allow_all()
-
-@csrf_exempt
-def logout_view(request):
-
-    logout(request)
-
-    return CORS(HttpResponse(json.dumps({"response":"True"}))).allow_all()
+from dashboard.sendemail import Mail
 
 
 @csrf_exempt
@@ -40,176 +17,16 @@ def test(request):
     return CORS(HttpResponse(json.dumps({"response":"True", "data":response}))).allow_all()
 
 
-
 @csrf_exempt
-def get_gender_per_branch(request, branch):
+def send_mail(request):
+
+    email = request.GET.get("email", "")
+    lga = request.GET.get("lga", "")
     
-    token = Token().authorize(request)
+    Mail().send([email], lga)
 
-    if token.get("authenticated"):
-        
-        data = Data(request, branch).gender_per_branch()
-        
-        return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
+    return CORS(HttpResponse(json.dumps({"response":"True", "data":"mail sent"}))).allow_all()
 
-    return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
-
-@csrf_exempt
-def get_grouped_customers_by_month(request, branch):
-    
-    token = Token().authorize(request)
-
-    if token.get("authenticated"):
-
-        data = Data(request, branch).grouped_customers_by_month()
-        
-        return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
-
-    return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
-
-@csrf_exempt
-def get_number_of_loans_per_segment(request, branch):
-    
-    token = Token().authorize(request)
-
-    if token.get("authenticated"):
-
-        data = Data(request, branch).number_of_loans_per_segment()
-        grouped = Data(request, branch).loans_amount_per_segment()
-        
-        return CORS(HttpResponse(json.dumps({"response":{"summarized":data, "grouped":grouped}, "status": True}))).allow_all()
-
-    return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
-
-@csrf_exempt
-def get_loan_performance_over_time(request, branch):
-
-    token = Token().authorize(request)
-
-    if token.get("authenticated"):
-
-        data = Data(request, branch).loan_performance_over_time()
-        
-        return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
-
-    return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
-
-@csrf_exempt
-def get_deposits_vs_saves(request, branch):
-
-    token = Token().authorize(request)
-
-    if token.get("authenticated"):
-        
-        data = Data(request, branch).deposits_vs_saves()
-        
-        return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
-
-    return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
-
-@csrf_exempt
-def get_loans_summary(request, branch):
-
-    token = Token().authorize(request)
-
-    if token.get("authenticated"):
-        
-        data = Data(request, branch).general_perfomance_of_loans()
-        
-        return CORS(HttpResponse(json.dumps({"response":data, "status": True}))).allow_all()
-
-    return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":token}))).allow_all()
-
-@csrf_exempt
-def play(request, name, number):
-
-    
-    status = Attempt.new_attempt(name, number)
-    data = Attempt.display_all_attempts()
-    return CORS(HttpResponse(json.dumps({"response":data, "status": status}))).allow_all()
-
-    # return CORS(HttpResponse(json.dumps({"response":[], "status": False, "content":"token"}))).allow_all()
-
-
-#########################################################################################################################
-#########################################################################################################################
-#########################################################################################################################
-@csrf_exempt
-def post_units(request, device, units, voltage, current):
-
-    device = Device.objects.filter(device_id = device)
-
-
-    if device.exists():       
-        units = int(units) 
-
-        device = device[0]
-        kwh_used = device.last_kwh - units
-        device.total_kwh = device.total_kwh + (device.last_kwh - units)
-        device.last_kwh = units
-        device.save()
-        
-        print(device.last_kwh, units)
-
-        Reading.objects.create(device_id = device.id, voltage = voltage, current = current, kwh_used = kwh_used, total_kwh = device.total_kwh, time = datetime.datetime.now())
-
-        return CORS(HttpResponse(1)).allow_all()
-
-
-    return CORS(HttpResponse(0)).allow_all()
-
-@csrf_exempt
-def check_new_units(request, device):
-
-    devices = Device.objects.filter(device_id = device)
-    device = devices[0]
-    new_kwh = 2
-
-    if devices.exists():        
-
-        new_kwh = device.new_kwh
-        device.new_kwh = 0
-        device.save()
-
-        return CORS(HttpResponse(int(new_kwh))).allow_all()
-
-
-    return CORS(HttpResponse(int(new_kwh))).allow_all()
-
-@csrf_exempt
-def relay_status(request, device):
-    
-    device = Device.objects.filter(device_id = device)
-    relay_status = 1
-
-    if device.exists():
-        relay_status = int(device[0].relay_status)
-
-        if relay_status: relay_status = 500
-        if not relay_status: relay_status = 600
-
-    return CORS(HttpResponse(int(relay_status))).allow_all()
-
-@csrf_exempt
-def get_device_details(request, device):
-    
-    devices = Device.objects.filter(device_id = device)
-    device = devices[0]
-
-    last_amp = Reading.objects.all().last()
-    max_amp = Reading.objects.all().order_by("-current").first()
-    if devices.exists():
-        response = {
-            "units" : device.device_id,
-            "ownername" : device.ownername,
-            "total_kwh" : device.total_kwh,
-            "last_kwh" : device.last_kwh,
-            "new_kwh" : device.new_kwh,
-            "last_amp": last_amp.current,
-            "max_amp": max_amp.current
-        }
-
-    return CORS(HttpResponse(json.dumps(response))).allow_all()
 
 
 @csrf_exempt
